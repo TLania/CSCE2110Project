@@ -8,22 +8,21 @@
 #include "ReservationManager.h"
 using namespace std;
 
-// ---------------------------------------------------------------------------
+
 // Input helper functions
-// ---------------------------------------------------------------------------
+// ----------------------
 
 // Removes spaces at the start and end of what the user typed
-// (size_t is the type a string uses for positions)
 string trim(string text) {
     size_t first = text.find_first_not_of(" \t");
     if (first == string::npos) {
-        return ""; // nothing but spaces
+        return ""; 
     }
     size_t last = text.find_last_not_of(" \t");
     return text.substr(first, last - first + 1);
 }
 
-// Reads a whole number. Returns -1 if the user typed something that is not a number.
+// Reads a whole number
 int readNumber(const string& prompt) {
     int number = 0;
     cout << prompt;
@@ -35,14 +34,14 @@ int readNumber(const string& prompt) {
             exit(0);
         }
         cin.clear();            // clear the error so cin works again
-        cin.ignore(1000, '\n'); // throw away the bad input
+        cin.ignore(1000, '\n'); // throw away bad input
         return -1;
     }
-    cin.ignore(1000, '\n');     // clear the newline so a later getline works
+    cin.ignore(1000, '\n');     // clear the newline
     return number;
 }
 
-// Reads a whole line of text (spaces allowed) and trims it
+// Reads a whole line of text and trims it
 string readText(const string& prompt) {
     string text;
     cout << prompt;
@@ -53,9 +52,8 @@ string readText(const string& prompt) {
     return trim(text);
 }
 
-// ---------------------------------------------------------------------------
 // Menu functions
-// ---------------------------------------------------------------------------
+// --------------
 
 void printMenu() {
     cout << endl;
@@ -269,9 +267,8 @@ void generateReport() {
     cout << "Generate Report is not connected yet (Report Generator part)." << endl;
 }
 
-// ---------------------------------------------------------------------------
 // main
-// ---------------------------------------------------------------------------
+// ----
 int main() {
     ResourceManager resources;
     ReservationManager reservations(&resources); // & gives the manager the address of the resource list
