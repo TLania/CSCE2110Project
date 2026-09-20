@@ -19,16 +19,17 @@ Reservations::~Reservations() { // Destructor
 }
 
 // Function to check if times overlap, for inserting functions
-bool checkTimes(const string& newStart, const string& newEnd, const string& start, const string& end){
-  return (newStart < end && newEnd > start);
+bool checkTimes(const string& newStart, const string& newEnd, const string& start, const string& end,
+  const string& newLocation, const string& location){
+  return (newStart < end && newEnd > start && location == newLocation);
 }
 // Insert Reservations
-void Reservations::AddReservation(int id, const string& name, const string& date,
-  const string& start, const string& end, int size) {
+void Reservations::AddReservation(int id, const string& name, const string& location, const string& date,
+  const string& start, const string& end) {
 
     Node* current = head;
     while (current != nullptr) { // Cycle through list to check for overlaps
-      if(current-> resDate == date && checkTimes(start, end, current->startTime, current->endTime)){
+      if(current-> resDate == date && checkTimes(start, end, current->startTime, current->endTime, location, current->resLocation)){
         cout << "Error: Reservation overlaps with an existing reservation. Please try another time.";
         return; 
 
@@ -36,7 +37,7 @@ void Reservations::AddReservation(int id, const string& name, const string& date
       current = current->next; 
     }
 
-    Node* newNode = new Node(id, name, date, start, end, size); // Assign new node values
+    Node* newNode = new Node(id, name, location, date, start, end); // Assign new node values
     if (head == nullptr){ // Enter node into new/empty list
       head = newNode;
       return;
@@ -76,10 +77,10 @@ bool Reservations::removeReservation(int resID){
   return true;
 }
 // Traverse reservations
-void Reservations::traverse(void(*visit)(int, const string&, const string&, int)) const{
+void Reservations::traverse(void(*visit)(int, const string&, const string&, const string&)) const{
   Node* current = head;
   while(current != nullptr){
-    visit(current->resID, current->resName, current->resDate, current->resSize);
+    visit(current->resID, current->resName, current->resLocation, current->resDate);
     
     current = current->next; // Cycle through list.
   }
@@ -94,11 +95,12 @@ void Reservations::display() const{
   }
 
   cout << "********************Reservation List********************" << endl;
-  cout << "| ID      | Name         | Date          | Party Size  |" << endl;
+  cout << "| ID      | Name         | Date          | Location  |" << endl;
   cout << "--------------------------------------------------------" << endl;
   while(current != nullptr) {
     cout << " " << current->resID << setw(7) << " " << current->resName << setw(13) <<
-      " " << current->resDate << setw(14) << " " << current->resSize << setw(12) << endl;
+      " " << current->resDate << setw(14) << " " << current->resLocation
+       << setw(12) << endl;
     
     current = current->next;
   }

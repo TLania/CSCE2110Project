@@ -9,21 +9,21 @@ class Reservations {
         struct Node {
             int resID; // So reservations do not overlap.
             string resName;
+            string resLocation;
             string resDate;
             string startTime;
             string endTime;
-            int resSize;
             Node* next; // Pointer that points to next node.
 
             // Header node to assign values.
 
-            Node(int id, const string& name, const string& date, const string& start, const string& end, int size){
+            Node(int id, const string& name,const string& location, const string& date,const string& start, const string& end){
                 resID = id;
                 resName = name;
+                resLocation = location;
                 resDate = date;
                 startTime = start;
                 endTime = end;
-                resSize = size;
                 next = nullptr; // Points to tail/next node.
             }
         };
@@ -36,9 +36,9 @@ class Reservations {
         ~Reservations(); // Destructor
 
         // Insert, remove, traverse, and display functions.
-        void AddReservation(int id, const string& name, const string& date, const string& start, const string& end, int size);
+        void AddReservation(int id, const string& name, const string& location, const string& date, const string& start, const string& end);
         bool removeReservation(int resID); // Remove reservation of given ID
-        void traverse (void (*visit)(int, const string&, const string&, int)) const;
+        void traverse (void (*visit)(int, const string&, const string&, const string&)) const;
         void display() const;
 
 };
