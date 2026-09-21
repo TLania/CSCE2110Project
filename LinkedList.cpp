@@ -5,106 +5,130 @@
 
 using namespace std;
 
-Reservations::Reservations(){ // Constructor
+ReservationList::ReservationList(){ // Constructor
    head = nullptr; // Point head to tail node.
+   cout = 0;
 }
-
-Reservations::~Reservations() { // Destructor
-  Node* current = head;
-  while (current != nullptr){
-    Node* temp = current;
+ReservationList::ReservationList(const ReservationList& other) : head(nullptr), count(0){
+  ReservationNode* current = other.head;
+  while(current != nullptr){
+    InsertEnd(current->data);
     current = current->next;
-    delete temp;
-  }
+  } // Copy Constructor
+
 }
 
-// Function to check if times overlap, for inserting functions
-bool checkTimes(const string& newStart, const string& newEnd, const string& start, const string& end,
-  const string& newLocation, const string& location){
-  return (newStart < end && newEnd > start && location == newLocation);
+ReservationList::~ReservationList() { // Destructor
+  clear();
 }
-// Insert Reservations
-void Reservations::AddReservation(int id, const string& name, const string& location, const string& date,
-  const string& start, const string& end) {
 
-    Node* current = head;
-    while (current != nullptr) { // Cycle through list to check for overlaps
-      if(current-> resDate == date && checkTimes(start, end, current->startTime, current->endTime, location, current->resLocation)){
-        cout << "Error: Reservation overlaps with an existing reservation. Please try another time.";
-        return; 
-
-      }
-      current = current->next; 
+ReservationList& ReservationList::operator=(const ReservationList& other){ // Overloaded assignment operator
+  if(this != &other){
+    clear();
+    ReservationNode* current = other.head;
+    while(current != nullptr){
+      InsertEnd(current->data);
+      current = current-> next;
     }
+  }  
 
-    Node* newNode = new Node(id, name, location, date, start, end); // Assign new node values
-    if (head == nullptr){ // Enter node into new/empty list
-      head = newNode;
-      return;
-    }
-    current = head;
-    while(current-> next != nullptr){ // Enter node at the end
-      current = current->next;
+  return *this;
+}
+
+// Insert ReservationList
+void ReservationList::InsertEnd](const Reservation& reservation) {
+  ReservationNode* newNode = new ReservationNode(reservation);
+  if(head == nullptr) {
+    head = newNode;
+  } else{
+    ReservationNode* current = head;
+    while(current->next != nullptr){
+      current = curent->next;
     }
     current->next = newNode;
   }
 
+  count++;
+  }
+
 
 // Remove reservation by ID
-bool Reservations::removeReservation(int resID){
-  if(head == nullptr){ // Check if the list is empty.
-    return false;
-  }
-  if(head ->resID == resID){
-    Node* temp = head;
-    head = head->next; 
-    delete temp;
-    return true;
-  }
-  Node* current = head;
-  while (current->next != nullptr && current->next->resID != resID){ // Cycle through list
+bool ReservationList::Remove(int reservationID, Reservation& removed){
+  ReservationNode* current = head;
+  ReservationNode* previous = nullptr;
+
+  // Cycle through list
+  while(current != nullptr && current->data.GetReservationID() != reservationID){
+    previous = current;
     current = current->next;
   }
 
-  if(current->next == nullptr){
-    return false; // Return if the ID is not found.
+  // If ID is not found
+  if(current == nullptr){
+    return false;
+  }
+  removed = current->data;
+
+  if(previous == nullptr){
+    head = current-> next; // Reassign head if head was removed.
+  } else {
+    previous->next = current->next;
   }
 
-  Node* temp = current->next;
-  current->next = current->next->next;
-  delete temp;
-
+  delete current;
+  cout--;
   return true;
 }
-// Traverse reservations
-void Reservations::traverse(void(*visit)(int, const string&, const string&, const string&)) const{
-  Node* current = head;
+
+// Delete every node in the list
+void ReservationList::Clear(){
+  while (head != nullptr){
+    ReservationNode* temp = head;
+    head = head->next;
+    delete temp;
+  }
+
+  count = 0;
+}
+
+// Check if the reservation ID already exists
+bool ReservationList::Contains(int reservationID) const{
+  ReservationNode* current = head;
   while(current != nullptr){
-    visit(current->resID, current->resName, current->resLocation, current->resDate);
-    
-    current = current->next; // Cycle through list.
+    if(current->data.GetReservationID() == reservationID){
+      return true;
+    }
+    current = current->next;
+  }
+  return false;
+}
+
+// Function to find head value and size of List
+ReservationNode* ReservationList::GetHead() const {
+    return head;
+}
+int ReservationList::GetSize() const {
+    return count;
+}
+
+// Traverse ReservationList, printing each one
+void ReservationList::Traverse() const{
+  ReservationNode* current = head;
+  while(current != nullptr){
+    current->data.Display();
+    current = current->next;
   }
 }
 
-// Display all reservations
-void Reservations::display() const{
-  Node* current = head;
-  if(current == nullptr){ // Check if empty
-    cout << "No reservations found." << endl;
+// Display all ReservationList
+void ReservationList::Display() const{
+  if (head == nullptr){
+    cout << "No active reservations." << endl;
     return;
   }
 
-  cout << "********************Reservation List********************" << endl;
-  cout << "| ID      | Name         | Date          | Location  |" << endl;
-  cout << "--------------------------------------------------------" << endl;
-  while(current != nullptr) {
-    cout << " " << current->resID << setw(7) << " " << current->resName << setw(13) <<
-      " " << current->resDate << setw(14) << " " << current->resLocation
-       << setw(12) << endl;
-    
-    current = current->next;
-  }
-  cout << "--------------------------------------------------------" << endl;
+  Traverse();
+  cout << "Total Reservations: " << count << endl;
 }
   
 

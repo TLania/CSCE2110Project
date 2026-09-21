@@ -1,45 +1,38 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
+
+#include "Reservation.h"
 #include <iostream>
 using namespace std;
 
-class Reservations {
-    protected:
-        // Node and all information that is stored in each one.
-        struct Node {
-            int resID; // So reservations do not overlap.
-            string resName;
-            string resLocation;
-            string resDate;
-            string startTime;
-            string endTime;
-            Node* next; // Pointer that points to next node.
-
-            // Header node to assign values.
-
-            Node(int id, const string& name,const string& location, const string& date,const string& start, const string& end){
-                resID = id;
-                resName = name;
-                resLocation = location;
-                resDate = date;
-                startTime = start;
-                endTime = end;
-                next = nullptr; // Points to tail/next node.
-            }
-        };
-
-        // Declare head node
-        Node* head;
-        
+// Call back node information from Reservations
+class ReservationNode{
     public:
-        Reservations(); // Default Constructor
-        ~Reservations(); // Destructor
+        Reservation data;
+        ReservationNode* next;
 
+        ReservationNode(const Reservation& r) : data(r), next(nullptr){}
+}
+class ReservationList {
+    private:
+        ReservationNode* head;
+        int count; // Total number of reservations on the list.
+    public:
+        ReservationList(); // Default Constructor
+        ReservationList(const ReservationList& other); // Copy Constructor
+        ~ReservationList(); // Destructor
+        ReservationList& operator =(const ReservationList& other); // Overloaded Assignment Operator
+        
         // Insert, remove, traverse, and display functions.
-        void AddReservation(int id, const string& name, const string& location, const string& date, const string& start, const string& end);
-        bool removeReservation(int resID); // Remove reservation of given ID
-        void traverse (void (*visit)(int, const string&, const string&, const string&)) const;
-        void display() const;
+        void InsertEnd(const Reservation& reservation);
+        void Remove(int reservationID, Reservation& removed);
+        void Clear();
+
+        bool Contains(int reservationID) const; // Check if Node exists.
+        void Traverse() const;
+        ReservationNode* GetHead() const; // Find the first reservation in the list.
+        int GetSize() const; // Total amount of reservations.
+        void Display() const;
 
 };
 
