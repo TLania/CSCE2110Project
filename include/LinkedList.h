@@ -12,7 +12,7 @@ class ReservationNode{
         ReservationNode* next;
 
         ReservationNode(const Reservation& r) : data(r), next(nullptr){}
-}
+};
 class ReservationList {
     private:
         ReservationNode* head;
