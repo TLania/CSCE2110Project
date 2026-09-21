@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>     // exit()
-
 #include "ResourceManager.h"
 #include "ReservationManager.h"
 #include "CancellationHistory.h"
