@@ -1,1 +1,0 @@
-The code is optimized for this linkedList (ReservationList), the one present in the main file is one that it will soon be optimized for the project
