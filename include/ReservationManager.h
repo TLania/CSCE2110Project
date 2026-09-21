@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 #include "Reservation.h"
-#include "ReservationList.h"
+#include "LinkedList.h"
 #include "ResourceManager.h"
 using namespace std;
 
