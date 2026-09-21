@@ -25,7 +25,7 @@ class ReservationList {
         
         // Insert, remove, traverse, and display functions.
         void InsertEnd(const Reservation& reservation);
-        void Remove(int reservationID, Reservation& removed);
+        bool Remove(int reservationID, Reservation& removed);
         void Clear();
 
         bool Contains(int reservationID) const; // Check if Node exists.
