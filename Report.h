@@ -1,14 +1,16 @@
 #ifndef REPORT_H
 #define REPORT_H
 using namespace std;
-#include "LinkedList.h"
-#include "Resource.h"
+#include "include/LinkedList.h" // For resource and reservation information
+#include "include/Resource.h" // For resource type
+#include "include/ReservationManager.h" // For Reservation list
 
 
 class Report {
     protected:
-    ReservationNode* head; // Head reservation to start traversal.
+    ReservationManager AllReservations; // Linked List of all active reservations.
     int requests; // Count how many times a resource is reserved.
+    ReservationList ResList; // Pulls linked list of Reservations
 
     public:
         Report(); // Constructor
@@ -25,6 +27,8 @@ class Report {
 
         // Show statistics based on reservation waitlist data
         void WaitStats() const;
+
+        void CompleteReport() const;
 };
 
 
