@@ -9,12 +9,15 @@ using namespace std;
 class Report {
     protected:
     ReservationManager AllReservations; // Linked List of all active reservations.
-    int requests; // Count how many times a resource is reserved.
     ReservationList ResList; // Pulls linked list of Reservations
+    ResourceManager AllResources; // Object for linked lists
+    int requests; // Count how many times a resource is reserved.
 
     public:
         Report(); // Constructor
         ~Report(); // Destructor
+
+        Resource SearchResult(const string& resourceID); // Helper function to search
 
         // Print function for all active reservations
         void ActiveReservations() const;
