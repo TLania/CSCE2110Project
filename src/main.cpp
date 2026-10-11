@@ -493,15 +493,7 @@ void undoCancellation(
         cout << "Could not restore: "
              << GetResultMessage(result)
              << endl;
-
-
-        // Restoration failed.
-        // Put it back on top of the stack
-        // so the history is not lost.
-
-        cancellationHistory.Push(
-            restored
-        );
+             
     }
 }
 
