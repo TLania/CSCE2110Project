@@ -9,8 +9,8 @@ GitHub repository: https://github.com/TLania/CSCE2110Project
 
 # Team
  Member | Components 
- Taylor Lania | Linked List Implementation, Complexity Analysis
- Lance Manuel| Resource Management, Reservation Management
+ Taylor Lania | Linked List Implementation, Complexity Analysis, Reporting
+ Lance Manuel| Resource Management, Reservation Management, Searching, Sorting
  Nnamdi Emenike | Cancellation History, Waiting List Management
 Each member developed on a feature branch (Linked-Lists, Resource-Management, Reservation-Management, Cancellation-History, Waiting-List-Management) and merged into main.
 
@@ -22,7 +22,7 @@ g++ -Iinclude -o go src/*.cpp
 Line2:
 ./go
 
-## The program opens data/resources.txt and data/reservations.txt , so it must be started from the project folder. If data/resources.txt cannot be opened, the program prints an error and exits.
+## The program opens data/resources.txt and data/reservations.txt, so it must be started from the project folder. If data/resources.txt cannot be opened, the program prints an error and exits.
 
 # Menu
 
@@ -45,7 +45,7 @@ Line2:
  5. Undo Cancellation | Restores the most recently cancelled reservation.
  6. Search Reservations | Views all active reservations, or searches by reservation ID, student ID, student name, resource ID, or date.
  7. Sort Resources | Sorts the resources by ID, name, type, or availability.
- 8. Generate Report | Placeholder.
+ 8. Generate Report | Builds a full system report: all active reservations, a per-resource utilization count, the most-requested resource(s) by current demand (active reservations plus students still waiting), and waiting-list statistics grouped by resource.
  9. Exit | Ends the program. 
 
 # Input Files
@@ -76,6 +76,7 @@ File(s) | Purpose
  ReservationList | Singly linked list that stores the active reservations: insert, remove, traverse, display.
  WaitingList | Queue (front and rear pointers) of waiting requests. First come, first served.
  CancellationHistory | Stack of cancelled reservations. Last in, first out.
+ Report | Generates the system report (active reservations, resource utilization, most requested resources, waiting-list statistics) directly from the live ResourceManager, ReservationManager, and WaitingList data.
  main.cpp | Menu and the code that connects all of the components.
 
 # Data Structures
@@ -131,10 +132,10 @@ Expectation | How to see it
  Reservations can be cancelled | Option 3 with Reservation ID 301.
  Waiting lists work | Option 2 for a slot that is taken (for example R101 on 09/15/2026), answer `y`, then use option 4. Cancel reservation 301 with option 3 and the waiting student is assigned.
  Undo works | Cancel a reservation with option 3, then use option 5.
+ Report reflects live data | Create a reservation or two with option 2, then run option 8 and confirm Resource Utilization and Most Requested Resource(s) count them correctly.
  Invalid input is handled | Try an unknown resource (EX:R999), an unavailable resource, a bad date, letters where a number is expected, or a menu choice such as 10.
 
 # Known Limitations
 
 - Changes made while the program runs are not written back to the data files.
-- Option 8 (Generate Report) is not implemented.
 - Dates must be typed exactly as MM/DD/YYYY.
