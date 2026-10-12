@@ -55,6 +55,7 @@ public:
 
     // Accessors
     int GetSize() const;
+    int CountForResource(const string& resourceID) const;
     bool IsResourceBooked(const string& resourceID, const string& date) const;
 
     // Display
