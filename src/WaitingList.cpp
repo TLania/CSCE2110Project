@@ -271,6 +271,97 @@ int WaitingList::GetSize() const {
 
 
 // ---------------------------------------------------------
+// CountForResource
+//
+// Counts how many students are currently waiting for
+// a specific resource.
+//
+// Time Complexity: O(n)
+// ---------------------------------------------------------
+
+int WaitingList::CountForResource(
+    const string& resourceID
+) const {
+
+    int count = 0;
+    WaitingNode* current = front;
+
+    while (current != nullptr) {
+
+        if (current->data.resourceID == resourceID) {
+            count++;
+        }
+
+        current = current->next;
+    }
+
+    return count;
+}
+
+
+// ---------------------------------------------------------
+// DisplayStatistics
+//
+// Displays the number of students waiting for each resource
+// currently represented in the waiting list.
+// ---------------------------------------------------------
+
+void WaitingList::DisplayStatistics() const {
+
+    cout << endl
+         << "--- Waiting-List Statistics ---"
+         << endl;
+
+    if (IsEmpty()) {
+
+        cout << "No students are currently waiting."
+             << endl;
+        return;
+    }
+
+    WaitingNode* current = front;
+
+    while (current != nullptr) {
+
+        // Check whether this resource appeared earlier in the queue.
+        // This prevents printing the same resource more than once.
+        bool alreadyDisplayed = false;
+        WaitingNode* previous = front;
+
+        while (previous != current) {
+
+            if (previous->data.resourceID ==
+                current->data.resourceID) {
+
+                alreadyDisplayed = true;
+                break;
+            }
+
+            previous = previous->next;
+        }
+
+        if (!alreadyDisplayed) {
+
+            cout << "Resource "
+                 << current->data.resourceID
+                 << ": "
+                 << CountForResource(
+                        current->data.resourceID
+                    )
+                 << " student(s) waiting."
+                 << endl;
+        }
+
+        current = current->next;
+    }
+
+    cout << "Total students waiting: "
+         << size
+         << endl;
+}
+
+
+// ---------------------------------------------------------
 // Display
 //
 // Displays waiting requests from FRONT to REAR.
