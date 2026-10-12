@@ -9,6 +9,7 @@
 #include "ReservationManager.h"
 #include "CancellationHistory.h"
 #include "WaitingList.h"
+#include "Report.h"
 
 using namespace std;
 
@@ -712,89 +713,6 @@ void sortResources(
 
 
 // ---------------------------------------------------------
-// OPTION 8
-// Generate Report
-// ---------------------------------------------------------
-
-void generateReport(
-    ResourceManager& resources,
-    ReservationManager& reservations,
-    const WaitingList& waitingLists
-) {
-    cout << endl
-         << "========== SYSTEM REPORT =========="
-         << endl;
-
-    // 1. Active reservations
-    cout << endl
-         << "--- Active Reservations ---"
-         << endl;
-    reservations.DisplayAll();
-
-    // 2. Resource utilization
-    cout << endl
-         << "--- Resource Utilization ---"
-         << endl;
-
-    int highestDemand = -1;
-
-    for (int i = 0; i < resources.GetSize(); i++) {
-        Resource resource = resources.GetResourceAt(i);
-        int activeCount =
-            reservations.CountForResource(resource.GetID());
-
-        cout << resource.GetID()
-             << " | " << resource.GetName()
-             << ": " << activeCount
-             << " active reservation(s)"
-             << endl;
-
-        int currentDemand =
-            activeCount +
-            waitingLists.CountForResource(resource.GetID());
-
-        if (currentDemand > highestDemand) {
-            highestDemand = currentDemand;
-        }
-    }
-
-    // 3. Most requested resources
-    // Current demand is active reservations + students still waiting.
-    cout << endl
-         << "--- Most Requested Resource(s) ---"
-         << endl;
-
-    if (resources.GetSize() == 0) {
-        cout << "No resources loaded." << endl;
-    } else {
-        for (int i = 0; i < resources.GetSize(); i++) {
-            Resource resource = resources.GetResourceAt(i);
-            int activeCount =
-                reservations.CountForResource(resource.GetID());
-            int waitingCount =
-                waitingLists.CountForResource(resource.GetID());
-            int currentDemand = activeCount + waitingCount;
-
-            if (currentDemand == highestDemand) {
-                cout << resource.GetID()
-                     << " | " << resource.GetName()
-                     << ": " << currentDemand
-                     << " current request(s)"
-                     << endl;
-            }
-        }
-    }
-
-    // 4. Waiting-list statistics
-    waitingLists.DisplayStatistics();
-
-    cout << endl
-         << "==================================="
-         << endl;
-}
-
-
-// ---------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------
 
@@ -823,6 +741,10 @@ int main() {
 
     // Queue
     WaitingList waitingLists;
+
+
+    // Report generator uses the same live system data
+    Report report(resources, reservations, waitingLists);
 
 
     // =============================================
@@ -981,11 +903,7 @@ int main() {
             // Report Generator
             case 8:
 
-                generateReport(
-                    resources,
-                    reservations,
-                    waitingLists
-                );
+                report.CompleteReport();
 
                 break;
 

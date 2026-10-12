@@ -1,143 +1,98 @@
 #include "Report.h"
 #include <iostream>
-#include <fstream>
-#include <vector>
+
 using namespace std;
 
-// *** Helper Functions ***
-vector<Counter> Report::GetCounts() const{
-    vector<Counter> TypeCounter; // vector to store counted values by Resource Type
-
-// Class objects and head node
-    ReservationNode* current = ResList.GetHead(); 
-
-    if(current == nullptr){ // Check to see if list is empty.
-        cout << "No active reservations have been made." << endl;
-        return TypeCounter;
-    }
-    while(current != nullptr){ // Cycles through list to count and find resource types.
-        int temp = AllResources.FindByID(current->data.GetResourceID()); // temp value to store the ID
-
-        bool reoccuring = false;
-        if(temp != 0){
-            Resource resource = AllResources.GetResourceAt(temp); // Find corresponding Resource
-            string type = resource.GetType(); // Get specific type
-
-            for(int i = 0; i <TypeCounter.size();++i){ // Begin count if it hasn't been counted yet
-                if(TypeCounter[i].resourceType == type){
-                    TypeCounter[i].count++;
-                    reoccuring = true;
-                    break;
-                }
-            }
-
-            if(!reoccuring){ // The resource has been counted.
-                Counter tempCount;
-                tempCount.resourceType = type;
-                tempCount.count = 1;
-
-                TypeCounter.push_back(tempCount);
-        }
-    }
-    current = current->next; // Point to next value
-    }
-
-    return TypeCounter;
-
+Report::Report(ResourceManager& resourceManager,
+               ReservationManager& reservationManager,
+               const WaitingList& waitingListManager)
+    : resources(resourceManager),
+      reservations(reservationManager),
+      waitingList(waitingListManager) {
 }
 
-Resource Report::SearchResult(const string& sourceID){ // Function to search and return each corresponding resource by ID
-    int value = AllResources.FindByID(sourceID);
-
-    if(value == 0){ // Check if there is an ID 
-        return Resource();
-    }
-
-    return AllResources.GetResourceAt(value);
+void Report::ActiveReservations() const {
+    cout << endl;
+    cout << "--- Active Reservations ---" << endl;
+    reservations.DisplayAll();
 }
 
+void Report::ResourceUtilization() const {
+    cout << endl;
+    cout << "--- Resource Utilization ---" << endl;
 
-
-// Constructor
-Report::Report() : AllReservations(0) { // Initialize Reservations and requests to 0 
-    requests = 0;
-}
-
-// Destructor
-Report::~Report() {}
-// Show Active Reservations
-void Report::ActiveReservations() const{
-    cout << "Active Reservations" << endl;
-    cout << "----------------------------------------" << endl;
-    AllReservations.DisplayAll(); // Prints every active Reservation.
-    cout << "----------------------------------------" << endl;
-}
-
-// Show information using the resource type and amount of corresponding reservations.
-void Report::ResourceUtilization() const{
-   vector<Counter> TypeCounter = GetCounts(); // Call vector helper functions
-
-   if(TypeCounter.empty()){ // Check if vector is empty
-    cout << "There are no reservations made." << endl;
-    return;
-   }
-
-    // Printing
-    cout << "------Resource Utilization Report-------" << endl;
-    cout << "----------------------------------------" << endl;
-
-    for( int i = 0; i < TypeCounter.size(); ++i){ // Loops through vector
-        cout << TypeCounter[i].resourceType << " usage amount: " << TypeCounter[i].count << endl;
-    }
-}
-
-
-void Report::MostRequested() const{
-    vector<Counter> TypeCounter = GetCounts(); // recall same functions
-
-    if(TypeCounter.empty()){
-        cout << "There is no active reservations." << endl;
+    if (resources.GetSize() == 0) {
+        cout << "No resources loaded." << endl;
         return;
     }
 
-    int most = TypeCounter[0].count;
-    string mostResource = TypeCounter[0].resourceType;
+    for (int i = 0; i < resources.GetSize(); i++) {
+        Resource resource = resources.GetResourceAt(i);
+        int activeCount =
+            reservations.CountForResource(resource.GetID());
 
-    for(int i = 1; i <TypeCounter.size(); ++i){
-        if(TypeCounter[i].count > most){
-            most = TypeCounter[i].count;
-            mostResource = TypeCounter[i].resourceType;
-        }
+        cout << resource.GetID()
+             << " | " << resource.GetName()
+             << ": " << activeCount
+             << " active reservation(s)"
+             << endl;
     }
-
-    cout << "Most requested Resource: " << mostResource << " -- Requested " << most << " times." << endl;
-
 }
 
-// Displayu Waiting List Statistics
-void Report::WaitStats() const{
-    // ***Calculations***
-    Report rep;
-    // Least requested
-    vector<Counter> TypeCounter = GetCounts();
-    if(TypeCounter.empty()){
-        cout << "There is no active reservations." << endl;
+void Report::MostRequested() const {
+    cout << endl;
+    cout << "--- Most Requested Resource(s) ---" << endl;
+
+    if (resources.GetSize() == 0) {
+        cout << "No resources loaded." << endl;
         return;
     }
-    int least = TypeCounter[0].count;
-    string leastResource = TypeCounter[0].resourceType;
-    for(int i = 1; i < TypeCounter.size(); ++i){
-        if(TypeCounter[i].count < least){
-            least = TypeCounter[i].count;
-            leastResource = TypeCounter[i].resourceType;
+
+    int highestDemand = -1;
+
+    // Current demand = active reservations + students currently waiting.
+    for (int i = 0; i < resources.GetSize(); i++) {
+        Resource resource = resources.GetResourceAt(i);
+
+        int currentDemand =
+            reservations.CountForResource(resource.GetID()) +
+            waitingList.CountForResource(resource.GetID());
+
+        if (currentDemand > highestDemand) {
+            highestDemand = currentDemand;
         }
     }
 
-    cout << "Waiting List Statistics" << endl;
-    cout << "---------------------------------------" << endl;
-    cout << "Current waiting list size: " << WaitList.GetSize() << endl;
-    MostRequested(); // Prints previous stats
-    cout << "Least requested resource: " << leastResource << " -- Requested " << least << " times." << endl;
-    cout << "Number of resources available: " << AllResources.GetSize() << endl;    
+    for (int i = 0; i < resources.GetSize(); i++) {
+        Resource resource = resources.GetResourceAt(i);
+
+        int currentDemand =
+            reservations.CountForResource(resource.GetID()) +
+            waitingList.CountForResource(resource.GetID());
+
+        if (currentDemand == highestDemand) {
+            cout << resource.GetID()
+                 << " | " << resource.GetName()
+                 << ": " << currentDemand
+                 << " current request(s)"
+                 << endl;
+        }
+    }
 }
 
+void Report::WaitStats() const {
+    waitingList.DisplayStatistics();
+}
+
+void Report::CompleteReport() const {
+    cout << endl;
+    cout << "========== SYSTEM REPORT ==========" << endl;
+
+    ActiveReservations();
+    ResourceUtilization();
+    MostRequested();
+    WaitStats();
+
+    cout << endl;
+    cout << "===================================" << endl;
+}
