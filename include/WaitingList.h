@@ -84,6 +84,14 @@ public:
     int GetSize() const;
 
 
+    // Count students currently waiting for one resource
+    int CountForResource(const string& resourceID) const;
+
+
+    // Display waiting-list statistics grouped by resource
+    void DisplayStatistics() const;
+
+
     // Display everyone currently waiting
     void Display() const;
 };
