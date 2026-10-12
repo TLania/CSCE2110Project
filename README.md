@@ -88,6 +88,12 @@ Linked list | Active reservations | ReservationList
  Stack | Cancellation history and undo | CancellationHistory 
  Vector | Resource inventory |  ResourceManager
 
+## Searching and Sorting Integration
+
+Resource search and sort both operate directly on ResourceManager's internal vector < Resource>. Searching is performed through a linear scan:  SearchByID and SearchByStatus look for an exact match, whereas SearchByName and SearchByType utilize string::find(), implying that any occurrence of the keyword within the field qualifies as a hit. To ensure consistency, every comparison is done in lowercase; hence, a search for "room" or "ROOM" yields the same results. Similarly, reservation searches in ReservationManager's linked list work in a relative manner. SearchByReservationID and SearchByStudentID seek exact matches, while SearchByStudentName performs a substring search, and both SearchByResourceID and SearchByDate are compared after converting to lowercase. All search functions provides a match count, allowing users to know if any results were found.
+
+For sorting, the system employs a custom recursive merge sort rather than using std::sort. Each sorting function calls a shared mergeSort() that recursively divides the resource vector into halves until single elements are reached. The merge() function then combines these halves, using one of four comparison functions: CompareByID, CompareByName, CompareByType, and CompareByStatus. The name and type comparators also lowercase both sides before making comparisons. In cases where two resources tie on a sort key, every comparator defaults to comparing by Resource ID, ensuring that the outcome remains consistent, regardless of the original order of the vector.
+
 # Reservation Rules
 
 A new reservation is accepted only when these are true:
