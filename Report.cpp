@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "Report.h"
 #include <iostream>
 #include <fstream>
@@ -140,3 +141,6 @@ void Report::WaitStats() const{
     cout << "Least requested resource: " << leastResource << " -- Requested " << least << " times." << endl;
     cout << "Number of resources available: " << AllResources.GetSize() << endl;    
 }
+=======
+
+>>>>>>> 1a3335b6d77966f4b531ecc8190ba64ee0d73999
