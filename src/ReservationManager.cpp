@@ -183,6 +183,23 @@ int ReservationManager::GetSize() const {
     return activeReservations.GetSize();
 }
 
+// Count active reservations associated with one resource.
+// This is used by the final system report for resource utilization.
+int ReservationManager::CountForResource(const string& resourceID) const {
+    int count = 0;
+    string lowerID = toLowerCase(resourceID);
+    ReservationNode* current = activeReservations.GetHead();
+
+    while (current != nullptr) {
+        if (toLowerCase(current->data.GetResourceID()) == lowerID) {
+            count++;
+        }
+        current = current->next;
+    }
+
+    return count;
+}
+
 
 bool ReservationManager::IsResourceBooked(const string& resourceID, const string& date) const {
     ReservationNode* current = activeReservations.GetHead();

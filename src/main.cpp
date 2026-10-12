@@ -9,6 +9,7 @@
 #include "ReservationManager.h"
 #include "CancellationHistory.h"
 #include "WaitingList.h"
+#include "Report.h"
 
 using namespace std;
 
@@ -493,6 +494,13 @@ void undoCancellation(
         cout << "Could not restore: "
              << GetResultMessage(result)
              << endl;
+
+        // Restoration failed, so keep the reservation in
+        // cancellation history instead of losing it.
+        cancellationHistory.Push(restored);
+
+        cout << "Cancellation remains in history."
+             << endl;
              
     }
 }
@@ -705,22 +713,6 @@ void sortResources(
 
 
 // ---------------------------------------------------------
-// OPTION 8
-// Generate Report
-// ---------------------------------------------------------
-
-void generateReport() {
-
-    // Report Generator integration
-    // will eventually go here.
-
-    cout << "Generate Report is not connected yet "
-         << "(Report Generator part)."
-         << endl;
-}
-
-
-// ---------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------
 
@@ -749,6 +741,10 @@ int main() {
 
     // Queue
     WaitingList waitingLists;
+
+
+    // Report generator uses the same live system data
+    Report report(resources, reservations, waitingLists);
 
 
     // =============================================
@@ -907,7 +903,7 @@ int main() {
             // Report Generator
             case 8:
 
-                generateReport();
+                report.CompleteReport();
 
                 break;
 
