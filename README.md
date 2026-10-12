@@ -11,7 +11,7 @@ GitHub repository: https://github.com/TLania/CSCE2110Project
  Member | Components 
  Taylor Lania | Linked List Implementation, Complexity Analysis, Reporting
  Lance Manuel| Resource Management, Reservation Management, Searching, Sorting
- Nnamdi Emenike | Cancellation History, Waiting List Management
+ Nnamdi Emenike | Cancellation History, Waiting List Management, Testing
 Each member developed on a feature branch (Linked-Lists, Resource-Management, Reservation-Management, Cancellation-History, Waiting-List-Management) and merged into main.
 
 # Build and Run
