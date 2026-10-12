@@ -493,6 +493,13 @@ void undoCancellation(
         cout << "Could not restore: "
              << GetResultMessage(result)
              << endl;
+
+        // Restoration failed, so keep the reservation in
+        // cancellation history instead of losing it.
+        cancellationHistory.Push(restored);
+
+        cout << "Cancellation remains in history."
+             << endl;
              
     }
 }
@@ -709,13 +716,80 @@ void sortResources(
 // Generate Report
 // ---------------------------------------------------------
 
-void generateReport() {
+void generateReport(
+    ResourceManager& resources,
+    ReservationManager& reservations,
+    const WaitingList& waitingLists
+) {
+    cout << endl
+         << "========== SYSTEM REPORT =========="
+         << endl;
 
-    // Report Generator integration
-    // will eventually go here.
+    // 1. Active reservations
+    cout << endl
+         << "--- Active Reservations ---"
+         << endl;
+    reservations.DisplayAll();
 
-    cout << "Generate Report is not connected yet "
-         << "(Report Generator part)."
+    // 2. Resource utilization
+    cout << endl
+         << "--- Resource Utilization ---"
+         << endl;
+
+    int highestDemand = -1;
+
+    for (int i = 0; i < resources.GetSize(); i++) {
+        Resource resource = resources.GetResourceAt(i);
+        int activeCount =
+            reservations.CountForResource(resource.GetID());
+
+        cout << resource.GetID()
+             << " | " << resource.GetName()
+             << ": " << activeCount
+             << " active reservation(s)"
+             << endl;
+
+        int currentDemand =
+            activeCount +
+            waitingLists.CountForResource(resource.GetID());
+
+        if (currentDemand > highestDemand) {
+            highestDemand = currentDemand;
+        }
+    }
+
+    // 3. Most requested resources
+    // Current demand is active reservations + students still waiting.
+    cout << endl
+         << "--- Most Requested Resource(s) ---"
+         << endl;
+
+    if (resources.GetSize() == 0) {
+        cout << "No resources loaded." << endl;
+    } else {
+        for (int i = 0; i < resources.GetSize(); i++) {
+            Resource resource = resources.GetResourceAt(i);
+            int activeCount =
+                reservations.CountForResource(resource.GetID());
+            int waitingCount =
+                waitingLists.CountForResource(resource.GetID());
+            int currentDemand = activeCount + waitingCount;
+
+            if (currentDemand == highestDemand) {
+                cout << resource.GetID()
+                     << " | " << resource.GetName()
+                     << ": " << currentDemand
+                     << " current request(s)"
+                     << endl;
+            }
+        }
+    }
+
+    // 4. Waiting-list statistics
+    waitingLists.DisplayStatistics();
+
+    cout << endl
+         << "==================================="
          << endl;
 }
 
@@ -907,7 +981,11 @@ int main() {
             // Report Generator
             case 8:
 
-                generateReport();
+                generateReport(
+                    resources,
+                    reservations,
+                    waitingLists
+                );
 
                 break;
 
