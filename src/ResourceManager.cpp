@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 #include <cctype>
 using namespace std;
 
@@ -45,6 +44,39 @@ bool CompareByStatus(const Resource& a, const Resource& b) {
     return a.GetStatus() < b.GetStatus();
 }
 
+// Forward declaration so mergeSort can call merge 
+void merge(vector<Resource>& arr, int left, int mid, int right, bool (*compare)(const Resource&, const Resource&));
+
+// Recursive Merge Sort
+void mergeSort(vector<Resource>& arr, int left, int right, bool (*compare)(const Resource&, const Resource&)) {
+    if (left >= right) return;
+    int mid = left + (right - left) / 2;
+    mergeSort(arr, left, mid, compare);       // Sort left
+    mergeSort(arr, mid + 1, right, compare);  // Sort right
+    merge(arr, left, mid, right, compare);    // Merge sorted halves
+}
+
+void merge(vector<Resource>& arr, int left, int mid, int right, bool (*compare)(const Resource&, const Resource&)) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    vector<Resource> leftArr(n1);
+    vector<Resource> rightArr(n2);
+
+    for (int i = 0; i < n1; i++)        // Copy into temporary arrays
+        leftArr[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {          // Merge the temporary arrays back
+        if (compare(leftArr[i], rightArr[j])) { arr[k] = leftArr[i]; i++; }
+        else                                   { arr[k] = rightArr[j]; j++; }
+        k++;
+    }
+    while (i < n1) { arr[k] = leftArr[i]; i++; k++; }   // Copy any remaining left elements
+    while (j < n2) { arr[k] = rightArr[j]; j++; k++; }  // Copy any remaining right elements
+}
+
 // Load resources from a file. Each line looks like: R101|Study Room 101|Study Room|Available, from TXT file.
 int ResourceManager::LoadFromFile(const string& filename) {
     ifstream inFile(filename);
@@ -54,7 +86,6 @@ int ResourceManager::LoadFromFile(const string& filename) {
 
     resources.clear();
     string line;
-    int lineNumber = 0;
 
     while (getline(inFile, line)) {
         // Remove the extra '\r' that a Windows text file leaves
@@ -175,19 +206,23 @@ void ResourceManager::SearchByStatus(const string& status) const {
     }
 }
 
-// Sort the vector using the comparison func above
+// Sort using mergeSort() and the comparison functions
 void ResourceManager::SortByID() {
-    sort(resources.begin(), resources.end(), CompareByID);
+    int size = resources.size();
+    mergeSort(resources, 0, size - 1, CompareByID);
 }
 
 void ResourceManager::SortByName() {
-    sort(resources.begin(), resources.end(), CompareByName);
+    int size = resources.size();
+    mergeSort(resources, 0, size - 1, CompareByName);
 }
 
 void ResourceManager::SortByType() {
-    sort(resources.begin(), resources.end(), CompareByType);
+    int size = resources.size();
+    mergeSort(resources, 0, size - 1, CompareByType);
 }
 
 void ResourceManager::SortByStatus() {
-    sort(resources.begin(), resources.end(), CompareByStatus);
+    int size = resources.size();
+    mergeSort(resources, 0, size - 1, CompareByStatus);
 }
